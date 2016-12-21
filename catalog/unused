@@ -1,0 +1,16 @@
+
+        <script type="text/javascript">
+                $('input:radio[name="choice"]').click(function() {
+                    $.ajax({
+                        url: '/categories/',
+                        data: $('form').serialize(),
+                        type: 'POST',
+                        success: function(evt) {
+                            $("#results").html = evt.data;
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                });
+        </script>
