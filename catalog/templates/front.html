@@ -5,34 +5,32 @@
     {% set categories = form.categories.choices %}    
     {% set choice = choice  %}
     {% block content %}
-        <div class="container">
-            <div class="col-md-4">
-                <div class="category_header">    
-                    <h3>Category Filter</h3>
-                </div>
-                <form method="POST" action="{{ url_for('showCategories') }}">
-                    {% for category in form.categories.choices %}
-                        {% if choice|int() == category[0]|int() %}
-                            <button type="submit" name="choice" class="btn
-                            btn-primary btn-xs active" value="{{
-                            category[0] }}">{{ category[1] }}</button>
-                        {% else %}
-                            <button type="submit" name="choice" class="btn
-                            btn-default btn-xs" value="{{ category[0] }}">{{ category[1] }}</button>
-                        {% endif %}
-                    {% endfor %}
-                </form>
+        <div class="col-md-4">
+            <div class="category_header">    
+                <h3>Category Filter</h3>
             </div>
-            <div class="col-md-8">
-                 <h3>Items</h3>
-                   {% if items %}
-                    {% for item in items %}
-                        {{ item.name }}
-                        <br>
-                    {% endfor %}
-                {% else %}
-                    <h5>There are no items in this category</h5>
-                {% endif %}
-            </div>
+            <form method="POST" action="{{ url_for('showCategories') }}">
+                {% for category in form.categories.choices %}
+                    {% if choice|int() == category[0]|int() %}
+                        <button type="submit" name="choice" class="btn
+                        btn-primary btn-xs active" value="{{
+                        category[0] }}">{{ category[1] }}</button>
+                    {% else %}
+                        <button type="submit" name="choice" class="btn
+                        btn-default btn-xs" value="{{ category[0] }}">{{ category[1] }}</button>
+                    {% endif %}
+                {% endfor %}
+            </form>
+        </div>
+        <div class="col-md-8">
+             <h3>Items</h3>
+               {% if items %}
+                {% for item in items %}
+                    {{ item.name }}
+                    <br>
+                {% endfor %}
+            {% else %}
+                <h5>There are no items in this category</h5>
+            {% endif %}
         </div>
     {% endblock %}

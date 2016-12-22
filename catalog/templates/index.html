@@ -59,17 +59,15 @@
                                 category[0]) }}">Edit {{ category[1] }}</a>
                         </li>
                         <li>
-                            <form action="{{ url_for('deleteCategory',
-                            category_id=category[0]) }}">
-                                <button type="submit" class="btn-link">Delete {{ category[1]
-                                }}</button>
-                            </button>
+                            <a href="{{ url_for('deleteCategory',
+                            category_id=category[0]) }}">Delete {{ category[1]
+                            }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Items</li>
-                <li><a href="#">Add</a></li>
+                <li><a href="{{ url_for('newItem') }}">Add</a></li>
                 <li><a href="#">Edit</a></li>
                 <li><a href="#">Delete</a></li>
               </ul>
@@ -80,19 +78,45 @@
     </nav>
 
     <!-- Begin page content -->
-    <!-- templates replace content here -->
-    <!-- templates for showing all categories -->
-    {% block content %}
-    {% endblock %}
 
-    <!-- template for adding new category -->
-    {% block newcategory %}
-    {% endblock %}
+    <!-- Display any Flashed messages -->
+    <div class="container"> 
+        <div class="flash">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}     
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <!-- templates replace content here -->
+        <!-- template for showing all categories -->
+        {% block content %}
+        {% endblock %}
 
-    <!-- template for editing and existing category -->
-    {% block editcategory %}
-    {% endblock %}
-    
+        <!-- template for adding new category -->
+        {% block newcategory %}
+        {% endblock %}
+
+        <!-- template for editing an existing category -->
+        {% block editcategory %}
+        {% endblock %}
+
+        <!-- template for deleting an existing category -->
+        {% block deletecategory %}
+        {% endblock %}
+
+        
+        <!-- template for adding a new item -->
+        {% block newitem %}
+        {% endblock %}
+
+    </div>
+
     <!-- Begin sticky footer -->
     <footer class="footer">
       <div class="container">

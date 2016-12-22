@@ -5,7 +5,7 @@ from flask import render_template, request, redirect, flash, url_for
 from catalog.database import db_session
 from models import Users, CatalogItem, Category, Images
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
-editCategoryForm
+editCategoryForm, deleteCategoryForm, newItemForm
 
 
 # beginning of all app routing
@@ -14,11 +14,8 @@ editCategoryForm
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/categories/', methods=['GET', 'POST'])
 def showCategories():
-    # get all top-level categories
-    categories = db_session.query(Category).order_by(asc(Category.name))
     # create the form and populate the categories from the above query results 
     form = mainForm()
-    form.categories.choices = [(category.id, category.name) for category in categories]
 
     # if no category is selected then the request will fail so just display all
     # items.  Otherwise display only items for the selected category.
@@ -45,7 +42,8 @@ def newCategory():
         newCategory = Category(name=form.name.data)
         db_session.add(newCategory)
         db_session.commit()
-        return redirect('/categories/') 
+        flash('New category %s sucessfully added' % newCategory.name)
+        return redirect(url_for('showCategories')) 
     return render_template('newCategory.html', form=form)
 
 
@@ -59,7 +57,8 @@ def editCategory(category_id):
     # are True
     if form.validate_on_submit():
         editedCategory.name = form.name.data 
-        db_session.commit() 
+        db_session.commit()
+        flash('Category successfully edited')
         return redirect(url_for('showCategories'))
     return render_template('editCategory.html', form=form, category=editedCategory)
 
@@ -68,6 +67,30 @@ def editCategory(category_id):
 @app.route('/categories/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     # filter for the passed in category_id
-    db_session.query(Category).filter_by(id=category_id).delete()
-    db_session.commit()
-    return redirect(url_for('showCategories'))
+    deletedCategory = db_session.query(Category).filter_by(id=category_id).one() 
+    form = deleteCategoryForm()
+    if form.validate_on_submit(): 
+        db_session.delete(deletedCategory)
+        db_session.commit()
+        flash('Category %s succuessfully deleted' % deletedCategory.name)
+        return redirect(url_for('showCategories'))
+    return render_template('deleteCategory.html', form=form,
+            category=deletedCategory)
+
+
+# create a new item
+@app.route('/categories/item/new/', methods=['GET', 'POST'])
+def newItem():
+    form = newItemForm()
+    if request.method == 'POST':
+        
+        if form.validate():
+            # create a new item record and commit it to the database
+            newItem = CatalogItem(name=form.name.data,
+                    description=form.description.data,
+                    category_id=form.categories.data)
+            db_session.add(newItem)
+            db_session.commit()
+            flash('New items %s successfully created' % newItem.name)
+            return redirect(url_for('showCategories')) 
+    return render_template('newItem.html', form=form)

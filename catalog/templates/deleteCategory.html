@@ -1,15 +1,15 @@
 {% extends "index.html" %}
    
-    {% block editcategory %}
+    {% block deletecategory %}
         <div class="col-md-12">
             <div class="category_header">
-                <h3>Edit Category {{ category.name }}</h3>
+                <h3>Are you sure you want to delete {{ category.name }}?</h3>
             </div>
             <a href="{{url_for('showCategories')}}">Cancel</a>
-            <form action="{{ url_for('editCategory', category_id=category.id)
+            <form action="{{ url_for('deleteCategory', category_id=category.id)
                 }}" method="POST">
                 {{ form.csrf_token }}
-                {{ form.name(size=20) }} {{ form.submit }}
+                {{ form.submit }}
             </form>
         </div>
     {% endblock %}

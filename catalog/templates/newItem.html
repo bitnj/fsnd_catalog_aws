@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+   
+    {% block newitem %}
+        <div class="col-md-12">
+            <div class="category_header">
+                <h3>Add Item</h3>
+            </div>
+            <a href="{{url_for('showCategories')}}">Cancel</a>
+            <form action="{{ url_for('newItem') }}" method="POST">
+                {{ form.csrf_token }}
+                {{ form.name.label }}<br>
+                {{ form.name(size=20) }}
+                <br>
+                {{ form.categories.label }}<br>
+                {{ form.categories() }}
+                <br>
+                {{ form.description.label }}<br>
+                {{ form.description(size=100) }}
+                <br>
+                {{ form.submit }}
+            </form>
+        </div>
+    {% endblock %}
