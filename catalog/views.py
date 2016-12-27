@@ -22,12 +22,10 @@ def showCategories():
     try:
         choice = request.form['choice']
         items = db_session.query(CatalogItem).filter_by(category_id=choice).all()
-        print(form.categories.choices)
         return render_template('front.html', form=form, items=items, choice=choice) 
     except:
         choice = 0
         items = db_session.query(CatalogItem)
-        print(form.categories.choices)
         return render_template('front.html', form=form, items=items, choice=choice)
 
 
