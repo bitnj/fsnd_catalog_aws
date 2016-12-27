@@ -10,9 +10,12 @@ from catalog.database import db_session
 
 # Form for main page
 class mainForm(FlaskForm):
-    categories = SelectField('Category', coerce=int, 
-            choices=[(category.id, category.name)
-                for category in db_session.query(Category)])
+    categories = SelectField('Category', coerce=int) 
+    
+    def __init__(self, *args, **kwargs):
+        super(mainForm, self).__init__(*args, **kwargs)
+        self.categories.choices = [(category.id, category.name) for category in
+                db_session.query(Category)]
 
 # Form for adding a new Category
 class newCategoryForm(FlaskForm):
@@ -31,16 +34,27 @@ class deleteCategoryForm(FlaskForm):
 # Form for adding a new Item
 class newItemForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    categories = SelectField('Category', coerce=int, 
-            choices=[(category.id, category.name)
-                for category in db_session.query(Category)])
+    categories = SelectField('Category', coerce=int) 
     description = TextAreaField('Description', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+    def __init__(self, *args, **kwargs):
+        super(newItemForm, self).__init__(*args, **kwargs)
+        self.categories.choices = [(category.id, category.name) for category in
+                db_session.query(Category)]
+
 # Form for editing an existing Item
 class editItemForm(FlaskForm):
-    name = StringField('name', validators=[DataRequired()])
-    categories = SelectField('category', choices=[], validators=[DataRequired()])
-    category_id = HiddenField()
-    description = StringField('description', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired()])
+    categories = SelectField('Category', coerce=int) 
+    description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+    def __init__(self, *args, **kwargs):
+        super(editItemForm, self).__init__(*args, **kwargs)
+        self.categories.choices = [(category.id, category.name) for category in
+                db_session.query(Category)]
+
+# Form for deleting an existing item 
+class deleteItemForm(FlaskForm):
+    submit = SubmitField('Confirm')

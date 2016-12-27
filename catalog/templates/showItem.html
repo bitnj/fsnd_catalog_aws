@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+    <!-- set statement makes item object available to the parent template for
+        setting the available menu items in the dropdown -->
+    {% set item = item %}    
+    {% block showitem %}
+        <div class="col-md-12">
+            <div class="category_header">
+                <h3>Item Detail</h3>
+            </div>
+            <a href="{{url_for('showCategories')}}">Back</a>
+            <form action="{{url_for('showItem', item_id=item.id) }}" method="GET"> 
+                <div class="item_detail">
+                    <h4>Item</h4>
+                    {{ item.name }}<br>
+                    <h4>Category</h4>
+                    {{ category.name }}<br>
+                    <h4>Description</h4>
+                    {{ item.description }}<br>
+                </div>
+            </form>
+        </div>
+    {% endblock %}
+

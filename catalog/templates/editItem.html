@@ -1,21 +1,25 @@
 {% extends "index.html" %}
-   
+  
+    {% set item = item %}
     {% block edititem %}
-        <div class="container">
-            <div class="col-md-12">
-                <div class="item_header">
-                    <h3>Edit Item {{ item.name }}</h3>
-                </div>
-                <a href={{url_for('showCategories')}}>Cancel</a>
-                <form action={{ url_for('editItem', item_id=item.id)
-                    }} method="POST">
-                    {{ form.csrf_token }}
-                    {{ form.name(size=20) }}
-                    {{ form.categories(size=20) }}
-                    {{ form.category_id }}
-                    {{ form.description(size=100) }}
-                    {{ form.submit }}
-                </form>
+        <div class="col-md-12">
+            <div class="category_header">
+                <h3>Edit Item {{ item.name }}</h3>
             </div>
+            <a href="{{url_for('showCategories')}}">Cancel</a>
+            <form action="{{ url_for('editItem', item_id=item.id)
+                }}" method="POST">
+                {{ form.csrf_token }}
+                {{ form.name.label }}<br>
+                {{ form.name(value=item.name) }}
+                <br>
+                {{ form.categories.label }}<br>
+                {{ form.categories(value=item.category) }}
+                <br>
+                {{ form.description.label }}<br>
+                {{ form.description(value=item.description) }}
+                <br>
+                {{ form.submit }}
+            </form>
         </div>
     {% endblock %}

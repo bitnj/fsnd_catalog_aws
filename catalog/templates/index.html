@@ -50,7 +50,7 @@
               <ul class="dropdown-menu">
                 <li class="dropdown-header">Categories</li>
                 <li>
-                    <a href="{{ url_for('newCategory') }}">Add</a>
+                    <a href="{{ url_for('newCategory') }}">Add New</a>
                 </li>
                 {% for category in categories %}
                     {% if choice|int() == category[0]|int() %}
@@ -67,9 +67,17 @@
                 {% endfor %}
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Items</li>
-                <li><a href="{{ url_for('newItem') }}">Add</a></li>
-                <li><a href="#">Edit</a></li>
-                <li><a href="#">Delete</a></li>
+                <li><a href="{{ url_for('newItem') }}">Add New</a></li>
+                {% if item %}
+                    <li>
+                        <a href="{{ url_for('editItem', item_id=item.id)
+                        }}">Edit {{ item.name }}</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('deleteItem', item_id=item.id)
+                        }}">Delete {{ item.name }}</a>
+                    </li>
+                {% endif %}
               </ul>
             </li>
           </ul>
@@ -110,11 +118,21 @@
         {% block deletecategory %}
         {% endblock %}
 
-        
+        <!-- template for displaying a single item -->
+        {% block showitem %}
+        {% endblock %}
+
         <!-- template for adding a new item -->
         {% block newitem %}
         {% endblock %}
 
+        <!-- template for editing an item -->
+        {% block edititem %}
+        {% endblock %}
+        
+        <!-- template for deleting an item -->
+        {% block deleteitem %}
+        {% endblock %}
     </div>
 
     <!-- Begin sticky footer -->

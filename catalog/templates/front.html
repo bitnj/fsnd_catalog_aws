@@ -3,7 +3,7 @@
         template index so that the drop down menu items can be set based on the
         category selection made by the user -->
     {% set categories = form.categories.choices %}    
-    {% set choice = choice  %}
+    {% set choice = choice %}
     {% block content %}
         <div class="col-md-4">
             <div class="category_header">    
@@ -26,7 +26,8 @@
              <h3>Items</h3>
                {% if items %}
                 {% for item in items %}
-                    {{ item.name }}
+                <a href="{{ url_for('showItem', item_id=item.id) }}">{{
+                   item.name }}</a>
                     <br>
                 {% endfor %}
             {% else %}
