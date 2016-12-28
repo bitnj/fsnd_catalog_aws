@@ -7,8 +7,8 @@ from models import Users, CatalogItem, Category, Images
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
 editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
 
-
-# beginning of all app routing
+# OAuth code separated out for tidyness - import authentication modules
+import auth
 
 # list all catalog categories and items for the selected category
 @app.route('/', methods=['GET', 'POST'])
