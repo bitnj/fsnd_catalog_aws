@@ -10,6 +10,9 @@ editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
 # OAuth code separated out for tidyness - import authentication modules
 import auth
 
+from flask import session as login_session
+
+
 # list all catalog categories and items for the selected category
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/categories/', methods=['GET', 'POST'])
@@ -32,12 +35,15 @@ def showCategories():
 # create a new category
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def newCategory():
+    if 'username' not in login_session:
+        return redirect('/login')
     form = newCategoryForm()
     # validate_on_submit checks that the request is POST and that all validators
     # are True
     if form.validate_on_submit():
         # create a new category record and commit it to the database
-        newCategory = Category(name=form.name.data)
+        newCategory = Category(name=form.name.data,
+                user_id=login_session['user_id'])
         db_session.add(newCategory)
         db_session.commit()
         flash('New category %s sucessfully added' % newCategory.name)

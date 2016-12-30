@@ -9,14 +9,16 @@ from catalog.database import Base
 class Users(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, nullable=False)
-    username = Column(String(30), nullable=False)
-
+    name = Column(String(30), nullable=False)
+    email = Column(String(100), nullable=False)
+    picture = Column(String(250))
 
 class Category(Base):
     __tablename__ = 'category'
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(100), nullable=False)
-
+    user_id = Column(Integer, ForeignKey('users.id'))
+    users = relationship(Users)
 
 class Images(Base):
     __tablename__ = 'images'
