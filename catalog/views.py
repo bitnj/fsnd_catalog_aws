@@ -36,6 +36,7 @@ def showCategories():
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def newCategory():
     if 'username' not in login_session:
+        flash('You must be logged in to add a category')
         return redirect('/login')
     form = newCategoryForm()
     # validate_on_submit checks that the request is POST and that all validators
@@ -54,6 +55,9 @@ def newCategory():
 # edit an existing category
 @app.route('/categories/edit/<int:category_id>/', methods=['GET', 'POST'])
 def editCategory(category_id):
+    if 'username' not in login_session:
+        flash('You must be logged in to edit a category')
+        return redirect('/login')
     # filter for the passed in category_id
     editedCategory = db_session.query(Category).filter_by(id=category_id).one()
     form = editCategoryForm()
@@ -70,6 +74,9 @@ def editCategory(category_id):
 # delete an existing category
 @app.route('/categories/delete/<int:category_id>/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
+    if 'username' not in login_session:
+        flash('You must be logged in to delete a category')
+        return redirect('/login')
     # filter for the passed in category_id
     deletedCategory = db_session.query(Category).filter_by(id=category_id).one() 
     form = deleteCategoryForm()
@@ -94,6 +101,9 @@ def showItem(item_id):
 # create a new item
 @app.route('/items/item/new/', methods=['GET', 'POST'])
 def newItem():
+    if 'username' not in login_session:
+        flash('You must be logged in to add an item')
+        return redirect('/login')
     form = newItemForm()
     if request.method == 'POST':
         
@@ -112,6 +122,9 @@ def newItem():
 # edit an existing item 
 @app.route('/items/edit/<int:item_id>/', methods=['GET', 'POST'])
 def editItem(item_id):
+    if 'username' not in login_session:
+        flash('You must be logged in to edit an item')
+        return redirect('/login')
     # filter for the passed in item_id
     editedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
     form = editItemForm()
@@ -130,6 +143,9 @@ def editItem(item_id):
 # delete an existing item 
 @app.route('/items/delete/<int:item_id>/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    if 'username' not in login_session:
+        flash('You must be logged in to delete an item')
+        return redirect('/login')
     # filter for the passed in item_id
     deletedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
     form = deleteItemForm()
