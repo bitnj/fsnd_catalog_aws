@@ -1,5 +1,7 @@
 # Code to establish Flask-WTF forms
+from catalog import images 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, SelectField, SubmitField, IntegerField, \
 HiddenField, TextAreaField
 from wtforms.validators import DataRequired
@@ -7,6 +9,7 @@ from wtforms.validators import DataRequired
 # these are needed in order to populate the category choices from the database
 from models import Category
 from catalog.database import db_session
+
 
 # Form for main page
 class mainForm(FlaskForm):
@@ -36,6 +39,7 @@ class newItemForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     categories = SelectField('Category', coerce=int) 
     description = TextAreaField('Description', validators=[DataRequired()])
+    item_image = FileField('Item Image', validators=[FileAllowed(images, 'Images Only!')])
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):

@@ -28,12 +28,6 @@ class Category(Base):
             'name': self.name,
             }
 
-class Images(Base):
-    __tablename__ = 'images'
-    id = Column(Integer, primary_key=True, nullable=False)
-    file_path = Column(String(250), nullable=False)
-
-
 class CatalogItem(Base):
     __tablename__ = 'catalog_item'
     id = Column(Integer, primary_key=True, nullable=False)
@@ -41,10 +35,10 @@ class CatalogItem(Base):
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
-    image_id = Column(Integer, ForeignKey('images.id'))
+    image_filename = Column(String(250))
+    image_url = Column(String(250))
     category = relationship(Category)
     users = relationship(Users)
-    images = relationship(Images)
 
     @property
     def serialize(self):

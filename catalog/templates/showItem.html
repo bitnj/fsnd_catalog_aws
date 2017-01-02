@@ -3,21 +3,27 @@
         setting the available menu items in the dropdown -->
     {% set item = item %}    
     {% block showitem %}
-        <div class="col-md-12">
-            <div class="category_header">
-                <h3>Item Detail</h3>
+        <a href="{{url_for('showCategories')}}">Back</a>
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{{ creator.picture }}">
+                </a>
             </div>
-            <a href="{{url_for('showCategories')}}">Back</a>
-            <form action="{{url_for('showItem', item_id=item.id) }}" method="GET"> 
-                <div class="item_detail">
-                    <h4>Item</h4>
-                    {{ item.name }}<br>
-                    <h4>Category</h4>
-                    {{ category.name }}<br>
-                    <h4>Description</h4>
-                    {{ item.description }}<br>
+            <div class="media-body">
+                <h4 class="media-heading">{{ category.name }}</h4>
+                <div class="media">
+                    <div class="media-left">
+                        {% if item.image_url %}
+                            <a href="#">
+                                <img class="media-object-inner" src="{{ item.image_url
+                                }}"></a>
+                        {% endif %}
+                    </div>
                 </div>
-            </form>
+                <h5>Description</h5>
+                {{ item.description }}
+            </div>
         </div>
     {% endblock %}
 

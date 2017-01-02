@@ -3,14 +3,18 @@ from catalog import app
 from sqlalchemy import asc
 from flask import render_template, request, redirect, flash, url_for, jsonify
 from catalog.database import db_session
-from models import Users, CatalogItem, Category, Images
+from models import Users, CatalogItem, Category
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
 editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
 
 # OAuth code separated out for tidyness - import authentication modules
-import auth
+import auth 
+from auth import getUserInfo
 
 from flask import session as login_session
+
+# for image upload
+from catalog import images
 
 
 # JSON endpoints
@@ -30,6 +34,8 @@ def showItemsJSON():
 def showCategoryItemsJSON(category_id):
     items = db_session.query(CatalogItem).filter_by(id=category_id)
     return jsonify(items=[i.serialize for i in items])
+
+# end JSON endpoints
 
 
 # MAIN VIEW ROUTING
@@ -114,8 +120,10 @@ def deleteCategory(category_id):
 def showItem(item_id):
     # filter down to the item_id passed in
     item = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    creator = getUserInfo(item.user_id)
     category = db_session.query(Category).filter_by(id=item.category_id).one()
-    return render_template('showItem.html', item=item, category=category)
+    return render_template('showItem.html', item=item, category=category,
+            creator=creator)
     
 
 # create a new item
@@ -128,10 +136,14 @@ def newItem():
     if request.method == 'POST':
         
         if form.validate():
+            filename = images.save(request.files['item_image'])
+            url = images.url(filename)
             # create a new item record and commit it to the database
             newItem = CatalogItem(name=form.name.data,
                     description=form.description.data,
-                    category_id=form.categories.data)
+                    category_id=form.categories.data,
+                    user_id=login_session['user_id'], image_filename=filename,
+                    image_url=url)
             db_session.add(newItem)
             db_session.commit()
             flash('New items %s successfully created' % newItem.name)

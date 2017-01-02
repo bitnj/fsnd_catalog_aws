@@ -6,3 +6,13 @@ body {
 .category_list {
     border-right: 1px solid #000000;
 }
+
+.media-object {
+    width: 32px;
+    height: 32px;
+}
+
+.media-object-inner {
+    width: 64px;
+    height: 64px;
+}
