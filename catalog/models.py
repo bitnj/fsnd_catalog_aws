@@ -20,6 +20,14 @@ class Category(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     users = relationship(Users)
 
+    @property
+    def serialize(self):
+        """return object data in a serializeable format"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            }
+
 class Images(Base):
     __tablename__ = 'images'
     id = Column(Integer, primary_key=True, nullable=False)
@@ -38,4 +46,14 @@ class CatalogItem(Base):
     users = relationship(Users)
     images = relationship(Images)
 
+    @property
+    def serialize(self):
+        """return object data in a serializeable format"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'category_id': self.category_id,
+            'image_id': self.image_id,
+            }
 

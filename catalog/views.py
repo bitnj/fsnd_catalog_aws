@@ -1,7 +1,7 @@
 from catalog import app
 
 from sqlalchemy import asc
-from flask import render_template, request, redirect, flash, url_for
+from flask import render_template, request, redirect, flash, url_for, jsonify
 from catalog.database import db_session
 from models import Users, CatalogItem, Category, Images
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
@@ -13,6 +13,26 @@ import auth
 from flask import session as login_session
 
 
+# JSON endpoints
+@app.route('/categories/JSON')
+def showCategoriesJSON():
+    categories = db_session.query(Category)
+    return jsonify(categories=[c.serialize for c in categories])
+
+
+@app.route('/categories/items/JSON')
+def showItemsJSON():
+    items = db_session.query(CatalogItem)
+    return jsonify(items=[i.serialize for i in items])
+
+
+@app.route('/categories/<int:category_id>/JSON')
+def showCategoryItemsJSON(category_id):
+    items = db_session.query(CatalogItem).filter_by(id=category_id)
+    return jsonify(items=[i.serialize for i in items])
+
+
+# MAIN VIEW ROUTING
 # list all catalog categories and items for the selected category
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/categories/', methods=['GET', 'POST'])
