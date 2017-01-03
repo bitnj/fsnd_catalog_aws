@@ -8,18 +8,24 @@
             </div>
             <a href="{{url_for('showCategories')}}">Cancel</a>
             <form action="{{ url_for('editItem', item_id=item.id)
-                }}" method="POST">
+                }}" method="POST" enctype="multipart/form-data">
                 {{ form.csrf_token }}
                 {{ form.name.label }}<br>
                 {{ form.name(value=item.name) }}
                 <br>
                 {{ form.categories.label }}<br>
-                {{ form.categories(value=item.category) }}
+                {{ form.categories }}
                 <br>
                 {{ form.description.label }}<br>
-                {{ form.description(value=item.description) }}
+                {{ form.description(rows="10", cols="60") }}
+                <br>
+                {{ form.item_image.label }}<br>
+                {{ form.item_image }}
                 <br>
                 {{ form.submit }}
             </form>
+            {% if form.errors %}
+                {{ form.errors }}
+            {% endif %}
         </div>
     {% endblock %}

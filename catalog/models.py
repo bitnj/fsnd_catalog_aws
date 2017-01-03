@@ -13,6 +13,7 @@ class Users(Base):
     email = Column(String(100), nullable=False)
     picture = Column(String(250))
 
+
 class Category(Base):
     __tablename__ = 'category'
     id = Column(Integer, primary_key=True, nullable=False)
@@ -26,7 +27,8 @@ class Category(Base):
         return {
             'id': self.id,
             'name': self.name,
-            }
+        }
+
 
 class CatalogItem(Base):
     __tablename__ = 'catalog_item'
@@ -49,5 +51,4 @@ class CatalogItem(Base):
             'description': self.description,
             'category_id': self.category_id,
             'image_id': self.image_id,
-            }
-
+        }

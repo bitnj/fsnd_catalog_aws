@@ -5,10 +5,10 @@ from flask import render_template, request, redirect, flash, url_for, jsonify
 from catalog.database import db_session
 from models import Users, CatalogItem, Category
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
-editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
+    editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
 
 # OAuth code separated out for tidyness - import authentication modules
-import auth 
+import auth
 from auth import getUserInfo
 
 from flask import session as login_session
@@ -43,19 +43,28 @@ def showCategoryItemsJSON(category_id):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/categories/', methods=['GET', 'POST'])
 def showCategories():
-    # create the form and populate the categories from the above query results 
+    # create the form and populate the categories from the above query results
     form = mainForm()
 
     # if no category is selected then the request will fail so just display all
     # items.  Otherwise display only items for the selected category.
     try:
         choice = request.form['choice']
-        items = db_session.query(CatalogItem).filter_by(category_id=choice).all()
-        return render_template('front.html', form=form, items=items, choice=choice) 
+        items = db_session.query(CatalogItem).filter_by(
+            category_id=choice).all()
+        return render_template(
+            'front.html',
+            form=form,
+            items=items,
+            choice=choice)
     except:
         choice = 0
         items = db_session.query(CatalogItem)
-        return render_template('front.html', form=form, items=items, choice=choice)
+        return render_template(
+            'front.html',
+            form=form,
+            items=items,
+            choice=choice)
 
 
 # create a new category
@@ -70,49 +79,63 @@ def newCategory():
     if form.validate_on_submit():
         # create a new category record and commit it to the database
         newCategory = Category(name=form.name.data,
-                user_id=login_session['user_id'])
+                               user_id=login_session['user_id'])
         db_session.add(newCategory)
         db_session.commit()
         flash('New category %s sucessfully added' % newCategory.name)
-        return redirect(url_for('showCategories')) 
+        return redirect(url_for('showCategories'))
     return render_template('newCategory.html', form=form)
 
 
 # edit an existing category
 @app.route('/categories/edit/<int:category_id>/', methods=['GET', 'POST'])
 def editCategory(category_id):
+    # filter for the passed in category_id
+    editedCategory = db_session.query(Category).filter_by(id=category_id).one()
+    creator = getUserInfo(editedCategory.user_id)
+
     if 'username' not in login_session:
         flash('You must be logged in to edit a category')
         return redirect('/login')
-    # filter for the passed in category_id
-    editedCategory = db_session.query(Category).filter_by(id=category_id).one()
+    if creator.id != login_session['user_id']:
+        flash('You must be the owner to edit')
+        return redirect(url_for('showCategories'))
     form = editCategoryForm()
     # validate_on_submit checks that the request is POST and that all validators
     # are True
     if form.validate_on_submit():
-        editedCategory.name = form.name.data 
+        editedCategory.name = form.name.data
         db_session.commit()
         flash('Category successfully edited')
         return redirect(url_for('showCategories'))
-    return render_template('editCategory.html', form=form, category=editedCategory)
+    return render_template(
+        'editCategory.html',
+        form=form,
+        category=editedCategory)
 
 
 # delete an existing category
 @app.route('/categories/delete/<int:category_id>/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
+    # filter for the passed in category_id
+    deletedCategory = db_session.query(
+        Category).filter_by(id=category_id).one()
+    creator = getUserInfo(deletedCategory.user_id)
+
     if 'username' not in login_session:
         flash('You must be logged in to delete a category')
         return redirect('/login')
-    # filter for the passed in category_id
-    deletedCategory = db_session.query(Category).filter_by(id=category_id).one() 
+    if creator.id != login_session['user_id']:
+        flash('You must be the owner to delete')
+        return redirect(url_for('showCategories'))
     form = deleteCategoryForm()
-    if form.validate_on_submit(): 
+    if form.validate_on_submit():
         db_session.delete(deletedCategory)
         db_session.commit()
         flash('Category %s successfully deleted' % deletedCategory.name)
         return redirect(url_for('showCategories'))
     return render_template('deleteCategory.html', form=form,
-            category=deletedCategory)
+                           category=deletedCategory)
 
 
 # show an item specific page
@@ -123,8 +146,8 @@ def showItem(item_id):
     creator = getUserInfo(item.user_id)
     category = db_session.query(Category).filter_by(id=item.category_id).one()
     return render_template('showItem.html', item=item, category=category,
-            creator=creator)
-    
+                           creator=creator)
+
 
 # create a new item
 @app.route('/items/item/new/', methods=['GET', 'POST'])
@@ -134,52 +157,68 @@ def newItem():
         return redirect('/login')
     form = newItemForm()
     if request.method == 'POST':
-        
         if form.validate():
             filename = images.save(request.files['item_image'])
             url = images.url(filename)
             # create a new item record and commit it to the database
-            newItem = CatalogItem(name=form.name.data,
-                    description=form.description.data,
-                    category_id=form.categories.data,
-                    user_id=login_session['user_id'], image_filename=filename,
-                    image_url=url)
+            newItem = CatalogItem(
+                name=form.name.data,
+                description=form.description.data,
+                category_id=form.categories.data,
+                user_id=login_session['user_id'],
+                image_filename=filename,
+                image_url=url)
             db_session.add(newItem)
             db_session.commit()
             flash('New items %s successfully created' % newItem.name)
-            return redirect(url_for('showCategories')) 
+            return redirect(url_for('showCategories'))
     return render_template('newItem.html', form=form)
 
 
-# edit an existing item 
+# edit an existing item
 @app.route('/items/edit/<int:item_id>/', methods=['GET', 'POST'])
 def editItem(item_id):
+    # filter for the passed in item_id
+    editedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    creator = getUserInfo(editedItem.user_id)
     if 'username' not in login_session:
         flash('You must be logged in to edit an item')
         return redirect('/login')
-    # filter for the passed in item_id
-    editedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    if creator.id != login_session['user_id']:
+        flash('You must be the owner to edit')
+        return redirect(url_for('showCategories'))
     form = editItemForm()
+    # couldn't seem to set this in the template
+    form.categories.data = editedItem.category_id
+    form.description.data = editedItem.description
     # validate_on_submit checks that the request is POST and that all validators
     # are True
     if form.validate_on_submit():
-        editedItem.name = form.name.data 
+        filename = images.save(request.files['item_image'])
+        url = images.url(filename)
+        editedItem.name = form.name.data
         editedItem.category_id = form.categories.data
         editedItem.description = form.description.data
+        editedItem.image_filename = filename
+        editedItem.image_url = url
         db_session.commit()
         flash('Item successfully edited')
         return redirect(url_for('showCategories'))
     return render_template('editItem.html', form=form, item=editedItem)
 
 
-# delete an existing item 
+# delete an existing item
 @app.route('/items/delete/<int:item_id>/', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    # filter for the passed in item_id
+    deletedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    creator = getUserInfo(deletedItem.user_id)
     if 'username' not in login_session:
         flash('You must be logged in to delete an item')
         return redirect('/login')
-    # filter for the passed in item_id
-    deletedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    if creator.id != login_session['user_id']:
+        flash('You must be the owner to delete')
+        return redirect(url_for('showCategories'))
     form = deleteItemForm()
     # validate_on_submit checks that the request is POST and that all validators
     # are True

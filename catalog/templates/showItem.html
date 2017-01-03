@@ -4,26 +4,39 @@
     {% set item = item %}    
     {% block showitem %}
         <a href="{{url_for('showCategories')}}">Back</a>
-        <div class="media">
-            <div class="media-left">
-                <a href="#">
-                    <img class="media-object" src="{{ creator.picture }}">
-                </a>
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading">{{ category.name }}</h4>
-                <div class="media">
-                    <div class="media-left">
-                        {% if item.image_url %}
-                            <a href="#">
-                                <img class="media-object-inner" src="{{ item.image_url
-                                }}"></a>
-                        {% endif %}
-                    </div>
+        <ul class="media-list">
+            <li class="media">
+                <div class="media-left media-middle">
+                    {% if creator.picture %}
+                        <a href="#">
+                            <img class="media-object img-circle" src="{{ creator.picture }}">
+                        </a>
+                    {% else %}
+                        <a href="#">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </a>
+                    {% endif %}     
                 </div>
-                <h5>Description</h5>
-                {{ item.description }}
-            </div>
-        </div>
+                <div class="media-body">
+                    <h5>Creator: {{ creator.name }}</h5>
+                </div>
+            </li>
+            <hr>
+            <li class="media">
+                <div class="media-left">
+                    {% if item.image_filename %}
+                        <img class="media-object-inner" src="{{ item.image_url }}">
+                    {% else %}
+                        <span class="glyphicon glyphicon-tag"></span>
+                    {% endif %}
+                </div>
+                <div class="media-body">
+                    <h3 class="media-heading">Item: {{ item.name }}</h3>
+                    <h4>Category: {{ category.name }}</h4>
+                    <h5>Description</h5>
+                    {{ item.description }}
+                </div>
+            </li>
+        </ul>
     {% endblock %}
 

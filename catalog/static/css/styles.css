@@ -2,17 +2,15 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
-/* add right border to category list */
-.category_list {
-    border-right: 1px solid #000000;
-}
-
 .media-object {
-    width: 32px;
-    height: 32px;
+    width: 64px;
+    height: auto;
+    margin-top: 20px;
 }
 
 .media-object-inner {
-    width: 64px;
-    height: 64px;
+    width: 300px;
+    height: auto;
 }
+
+
