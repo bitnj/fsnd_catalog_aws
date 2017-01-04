@@ -6,6 +6,7 @@ from catalog.database import db_session
 from models import Users, CatalogItem, Category
 from catalog.forms import mainForm, newCategoryForm, newCategoryForm, \
     editCategoryForm, deleteCategoryForm, newItemForm, editItemForm, deleteItemForm
+from functools import wraps
 
 # OAuth code separated out for tidyness - import authentication modules
 import auth
@@ -45,6 +46,17 @@ def showItemJSON(item_id):
 
 
 # MAIN VIEW ROUTING
+# Decorator for checking login status
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            flash('You must be logged in to access this resource')
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # list all catalog categories and items for the selected category
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/categories/', methods=['GET', 'POST'])
@@ -75,10 +87,8 @@ def showCategories():
 
 # create a new category
 @app.route('/categories/new/', methods=['GET', 'POST'])
+@login_required
 def newCategory():
-    if 'username' not in login_session:
-        flash('You must be logged in to add a category')
-        return redirect('/login')
     form = newCategoryForm()
     # validate_on_submit checks that the request is POST and that all validators
     # are True
@@ -95,14 +105,12 @@ def newCategory():
 
 # edit an existing category
 @app.route('/categories/edit/<int:category_id>/', methods=['GET', 'POST'])
+@login_required
 def editCategory(category_id):
     # filter for the passed in category_id
     editedCategory = db_session.query(Category).filter_by(id=category_id).one()
     creator = getUserInfo(editedCategory.user_id)
 
-    if 'username' not in login_session:
-        flash('You must be logged in to edit a category')
-        return redirect('/login')
     if creator.id != login_session['user_id']:
         flash('You must be the owner to edit')
         return redirect(url_for('showCategories'))
@@ -122,15 +130,13 @@ def editCategory(category_id):
 
 # delete an existing category
 @app.route('/categories/delete/<int:category_id>/', methods=['GET', 'POST'])
+@login_required
 def deleteCategory(category_id):
     # filter for the passed in category_id
     deletedCategory = db_session.query(
         Category).filter_by(id=category_id).one()
     creator = getUserInfo(deletedCategory.user_id)
 
-    if 'username' not in login_session:
-        flash('You must be logged in to delete a category')
-        return redirect('/login')
     if creator.id != login_session['user_id']:
         flash('You must be the owner to delete')
         return redirect(url_for('showCategories'))
@@ -157,10 +163,8 @@ def showItem(item_id):
 
 # create a new item
 @app.route('/items/item/new/', methods=['GET', 'POST'])
+@login_required
 def newItem():
-    if 'username' not in login_session:
-        flash('You must be logged in to add an item')
-        return redirect('/login')
     form = newItemForm()
     if request.method == 'POST':
         if form.validate():
@@ -183,13 +187,12 @@ def newItem():
 
 # edit an existing item
 @app.route('/items/edit/<int:item_id>/', methods=['GET', 'POST'])
+@login_required
 def editItem(item_id):
     # filter for the passed in item_id
     editedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
     creator = getUserInfo(editedItem.user_id)
-    if 'username' not in login_session:
-        flash('You must be logged in to edit an item')
-        return redirect('/login')
+    
     if creator.id != login_session['user_id']:
         flash('You must be the owner to edit')
         return redirect(url_for('showCategories'))
@@ -215,13 +218,12 @@ def editItem(item_id):
 
 # delete an existing item
 @app.route('/items/delete/<int:item_id>/', methods=['GET', 'POST'])
+@login_required
 def deleteItem(item_id):
     # filter for the passed in item_id
     deletedItem = db_session.query(CatalogItem).filter_by(id=item_id).one()
     creator = getUserInfo(deletedItem.user_id)
-    if 'username' not in login_session:
-        flash('You must be logged in to delete an item')
-        return redirect('/login')
+    
     if creator.id != login_session['user_id']:
         flash('You must be the owner to delete')
         return redirect(url_for('showCategories'))
