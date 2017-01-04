@@ -50,5 +50,6 @@ class CatalogItem(Base):
             'name': self.name,
             'description': self.description,
             'category_id': self.category_id,
-            'image_id': self.image_id,
+            'image_filename': self.image_filename,
+            'image_url': self.image_url,
         }

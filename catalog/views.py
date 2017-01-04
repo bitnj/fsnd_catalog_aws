@@ -24,16 +24,22 @@ def showCategoriesJSON():
     return jsonify(categories=[c.serialize for c in categories])
 
 
+@app.route('/categories/<int:category_id>/JSON')
+def showCategoryItemsJSON(category_id):
+    items = db_session.query(CatalogItem).filter_by(id=category_id)
+    return jsonify(items=[i.serialize for i in items])
+
+
 @app.route('/categories/items/JSON')
 def showItemsJSON():
     items = db_session.query(CatalogItem)
     return jsonify(items=[i.serialize for i in items])
 
 
-@app.route('/categories/<int:category_id>/JSON')
-def showCategoryItemsJSON(category_id):
-    items = db_session.query(CatalogItem).filter_by(id=category_id)
-    return jsonify(items=[i.serialize for i in items])
+@app.route('/categories/items/<int:item_id>/JSON')
+def showItemJSON(item_id):
+    items = db_session.query(CatalogItem).filter_by(id=item_id).one()
+    return jsonify(items.serialize)
 
 # end JSON endpoints
 
