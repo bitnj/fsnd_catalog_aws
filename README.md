@@ -3,6 +3,9 @@
 ## Overview
 See Project Rubric [here]
 
+## Server Info
+http://ec2-35.161.39.217.us-west-2.compute.amazonaws.com
+
 ## Server Setup
 1. Change root password using `passwd` command
 2. Create a new user using `adduser` [username]
@@ -31,7 +34,7 @@ See Project Rubric [here]
     - ```reload ssh```
     - log back in at port 2200
 7. Firewall Configuration
-	- ```sudo ufw default deny incoming```
+    - ```sudo ufw default deny incoming```
     - ```sudo ufw default allow outgoing```
     - ```sudo ufw allow ssh```
     - ```sudo ufw allow 2200/tcp```
@@ -51,7 +54,7 @@ See Project Rubric [here]
 2. Install mod-wsgi
     - ```sudo apt-get install libapache2-mod-wsgi```
 
-3. In the **/etc/apache2/sites-enabled** I created a file called **fsnd_item_catalog.conf**
+3. In the **/etc/apache2/sites-enabled** edit the file called **000-default.conf**
 	- view the file for complete setup
 		- includes, among other things, **WSGIScriptAlias / /var/www/html/fsnd_item_catalog.wsgi**
 4. restart Apache `sudo apache2ctl restart`
