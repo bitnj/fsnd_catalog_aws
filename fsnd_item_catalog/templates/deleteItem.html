@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+   
+    {% block deleteitem %}
+        <div class="col-md-12">
+            <div class="item_header">
+                <h3>Are you sure you want to delete {{ item.name }}?</h3>
+            </div>
+            <a href="{{url_for('showCategories')}}">Cancel</a>
+            <form action="{{ url_for('deleteItem', item_id=item.id)
+                }}" method="POST">
+                {{ form.csrf_token }}
+                {{ form.submit }}
+            </form>
+        </div>
+    {% endblock %}
