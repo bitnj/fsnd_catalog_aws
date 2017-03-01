@@ -1,37 +1,92 @@
-# fsnd_item_catalog
-FullStack Nanodegree Item Catalog project
+# Udacity FullStack Linux Server Config Project
 
-This project implements the Item Catalog project from the Udacity Fullstack
-Nanodegree according to the rubric provided here: [Project Rubric](https://review.udacity.com/#!/rubrics/5/view)
+## Overview
+See Project Rubric [here]
 
-The project utilizes the following tools:
+## Server Setup
+1. Change root password using `passwd` command
+2. Create a new user using `adduser` [username]
+  	- give sudo permission by creating an entry for the new user in the file **/etc/sudoers.d**
+  		- [username] ALL=(ALL) NOPASSWD:ALL
+3.  Copy the udacity_key.rsa file to the new user
+	- ```mkdir /home/grader/.ssh```
+    - ```cp ~/.ssh/authorized_keys /home/grader/.ssh/authorized_keys```
+    - give owenership and change permissions of the .ssh and authorized_keys file to grader
+    	- ```chown grader:grader /home/grader/.ssh```
+    	- ```chmod 700 /home/grader/.ssh```
+    	- ```chown grader:grader /home/grader/.ssh/authorized_keys```
+    	- ```chmod 600 /home/grader/.ssh/authorized_keys```
+    - test login as new user
+    	- login as new user ```ssh grader@35.161.39.217 -p 2200 -i ~/.ssh/udacity_key.rsa```
 
-1. Flask
-2. Python
-3. SQLAlchemy
-4. sqlite3
-5. WTF-Forms
+4. Update all currently installed packages
+    - ```sudo apt-get update```
+    - ```sudo apt-get upgrade```
+5.  set timezone to UTC
+    - ```sudo dpkg-reconfigure tzdata```
+    	- follow instructions on GUI to choose timezone
+6. SSH Configuration
+    - ```sudo vim /etc/ssh/sshd_config```
+    - ```change the SSH port 2200```
+    - ```reload ssh```
+    - log back in at port 2200
+7. Firewall Configuration
+	- ```sudo ufw default deny incoming```
+    - ```sudo ufw default allow outgoing```
+    - ```sudo ufw allow ssh```
+    - ```sudo ufw allow 2200/tcp```
+    - ```sudo ufw allow www```
+    - ```sudo ufw allow ntp```
+    - ```sudo ufw enable```
 
-## Getting started
-First download the git repository files and maintain the directory structure.
+8. Disable root access from SSH
+	- ```sudo vim /etc/ssh/sshd_config```
+		- replace what follows PermitRootLogin with no
 
-## Setting up the virtual machine
+## Getting the application running
+1. Install Apache
+    - ```sudo apt-get install apache2```
+    - test correct installation 
+    	- in a browser type in the server ip address and the Apache2 Ubuntu Default page will render
+2. Install mod-wsgi
+    - ```sudo apt-get install libapache2-mod-wsgi```
 
-Development was done using a virtual machine configured by Udacity.  There
-should be a pg_config.sh in the catalog directory if you downloaded the git
-repository.  Type "vagrant init" and when the installation is complete you should
-have a Vagrantfile in the directory.  Type "vagrant up" to launch the virtual
-machine.  When the vm is up type "vagrant ssh" to login.
+3. In the **/etc/apache2/sites-enabled** I created a file called **fsnd_item_catalog.conf**
+	- view the file for complete setup
+		- includes, among other things, **WSGIScriptAlias / /var/www/html/fsnd_item_catalog.wsgi**
+4. restart Apache `sudo apache2ctl restart`
+5. Install and configure Postgresq5.
+	- ```sudo apt-get install postgresql```
+    - do not allow remote connections to the database.  This is the default for PostgreSQL when installed from repositories
+6. create catalog ROLE. 
+	- First, switch to the superuser **postgres**
+	- ```sudo -u postgres -i```
+	- ```createuser catalog```
 
-## Running the application
+To login as a user when the username does match the ROLE within postgres
+- ```psql user_name -h 127.0.0.1 -d database_name```
 
-On the virtual machine change to the /vagrant directory and type python
-runserver.py to start the local server.
+7. Install Git
+	- ```sudo apt-get install git-all```
+	- Clone the Git repository for the catalog item app in the **/var/www/html** directory
+		- ```sudo git clone url_to_repository```
 
-In a browser go to localhost:5000 to view the web app.
+8. Install Flask
+	- ```sudo apt-get install python-pip```
+	- ```sudo pip install flask```
 
-## CRUD
-Create, Update, and Delete functionality can be accessed through the Edit dropdown menu
-in the top navigation bar.  Update and Delete are only visible if a Category or
-Item have been selected.  You can return to the home page at any time by
-clicking on the CatalogApp or Home menu items in the main navigation bar.
+9. Install SQLAlchemy
+	- ```sudo pip install sqlalchemy```
+
+10. Install libraries needed by app
+	- ```sudo pip install flask_uploads```
+	- ```sudo apt-get install python-dev```
+	- ```sudo apt-get install libpq-dev```
+	- ```sudo pip install -U psycopg2```
+
+## Resources Used
+
+1. Udacity Class videos
+2. Udacity Forums for the project which had links to useful information
+3. Stack Overflow
+4. Digital Ocean
